@@ -36,3 +36,36 @@ li {
   border-bottom: 1px solid #222;
   font-size: 1rem;
 }
+
+.add-set-button {
+  margin-top: 6px;
+  margin-right: 8px;
+}
+
+.add-set-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.set-counter {
+  font-size: 0.9rem;
+  color: #b0b0b0;
+}
+
+.confetti-piece {
+  position: fixed;
+  top: -10px;
+  width: 8px;
+  height: 8px;
+  opacity: 0.9;
+  animation-name: confetti-fall;
+  animation-timing-function: linear;
+  animation-fill-mode: forwards;
+  z-index: 1000;
+}
+
+@keyframes confetti-fall {
+  to {
+    transform: translateY(100vh) rotate(360deg);
+  }
+}

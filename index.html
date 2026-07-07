@@ -26,5 +26,50 @@
     <li>Straight-bar Tricep Pushdowns</li>
     <li>Standing DB Bicep Curls</li>
   </ul>
+
+  <script>
+    document.querySelectorAll('li').forEach(function (item) {
+      let setCount = 0;
+
+      const button = document.createElement('button');
+      button.textContent = 'Add Set';
+      button.className = 'add-set-button';
+
+      const counterText = document.createElement('span');
+      counterText.textContent = 'Sets: 0/3';
+      counterText.className = 'set-counter';
+
+      button.addEventListener('click', function () {
+        setCount = setCount + 1;
+        counterText.textContent = 'Sets: ' + setCount + '/3';
+
+        if (setCount >= 3) {
+          button.disabled = true;
+          showConfetti();
+        }
+      });
+
+      item.appendChild(document.createElement('br'));
+      item.appendChild(button);
+      item.appendChild(counterText);
+    });
+
+    function showConfetti() {
+      const colors = ['#ff595e', '#ffca3a', '#8ac926', '#1982c4', '#6a4c93'];
+
+      for (let i = 0; i < 30; i++) {
+        const piece = document.createElement('div');
+        piece.className = 'confetti-piece';
+        piece.style.left = Math.random() * 100 + 'vw';
+        piece.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+        piece.style.animationDuration = (Math.random() * 2 + 2) + 's';
+        document.body.appendChild(piece);
+
+        setTimeout(function () {
+          piece.remove();
+        }, 4000);
+      }
+    }
+  </script>
 </body>
 </html>
