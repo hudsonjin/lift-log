@@ -37,6 +37,27 @@ li {
   font-size: 1rem;
 }
 
+#workout-log-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+#workout-log-form select,
+#workout-log-form input {
+  background-color: #1e1e1e;
+  color: #e0e0e0;
+  border: 1px solid #333;
+  border-radius: 4px;
+  padding: 6px 8px;
+}
+
+.workout-log-row {
+  padding: 10px 0;
+  border-bottom: 1px solid #222;
+}
+
 .add-set-button {
   margin-top: 6px;
   margin-right: 8px;

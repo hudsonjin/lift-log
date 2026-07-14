@@ -28,6 +28,84 @@
     <li>Standing DB Bicep Curls</li>
   </ul>
 
+  <h2>Log a Workout</h2>
+  <div id="workout-log-form">
+    <select id="exercise-select">
+      <option>Pull ups</option>
+      <option>Flat Bench (Barbell or Dumbell)</option>
+      <option>Lat Pulldown</option>
+      <option>Incline DB Bench</option>
+      <option>Single-arm DB row</option>
+      <option>Chest fly (optional)</option>
+      <option>Tricep Dips</option>
+      <option>Barbell Bicep Curls</option>
+      <option>Skull Crushers</option>
+      <option>Incline DB Bicep Curls</option>
+      <option>Straight-bar Tricep Pushdowns</option>
+      <option>Standing DB Bicep Curls</option>
+    </select>
+    <input type="number" id="weight-input" placeholder="Weight">
+    <input type="number" id="reps-input" placeholder="Reps">
+    <button id="add-log-button">Add</button>
+  </div>
+
+  <div id="workout-log-list"></div>
+
+  <script>
+    const WORKOUT_LOG_KEY = 'workoutLog';
+
+    function loadWorkoutLog() {
+      const stored = localStorage.getItem(WORKOUT_LOG_KEY);
+      return stored ? JSON.parse(stored) : [];
+    }
+
+    function saveWorkoutLog(entries) {
+      localStorage.setItem(WORKOUT_LOG_KEY, JSON.stringify(entries));
+    }
+
+    let workoutLog = loadWorkoutLog();
+
+    const workoutLogList = document.getElementById('workout-log-list');
+
+    function renderWorkoutLog() {
+      workoutLogList.innerHTML = '';
+
+      workoutLog.forEach(function (entry) {
+        const row = document.createElement('div');
+        row.className = 'workout-log-row';
+        row.textContent = entry.exercise + ' — ' + entry.weight + ' lbs x ' + entry.reps + ' reps';
+        workoutLogList.appendChild(row);
+      });
+    }
+
+    document.getElementById('add-log-button').addEventListener('click', function () {
+      const exercise = document.getElementById('exercise-select').value;
+      const weight = document.getElementById('weight-input').value;
+      const reps = document.getElementById('reps-input').value;
+
+      if (!weight || !reps) {
+        alert('Please enter both weight and reps.');
+        return;
+      }
+
+      const newEntry = {
+        id: Date.now(),
+        exercise: exercise,
+        weight: weight,
+        reps: reps
+      };
+
+      workoutLog.push(newEntry);
+      saveWorkoutLog(workoutLog);
+      renderWorkoutLog();
+
+      document.getElementById('weight-input').value = '';
+      document.getElementById('reps-input').value = '';
+    });
+
+    renderWorkoutLog();
+  </script>
+
   <script>
     document.querySelectorAll('li').forEach(function (item) {
       let setCount = 0;
