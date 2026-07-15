@@ -53,6 +53,11 @@ li {
   padding: 6px 8px;
 }
 
+#workout-log-error {
+  color: #ff595e;
+  margin-bottom: 8px;
+}
+
 .workout-log-row {
   padding: 10px 0;
   border-bottom: 1px solid #222;

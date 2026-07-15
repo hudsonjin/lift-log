@@ -49,14 +49,21 @@
     <button id="add-log-button">Add</button>
   </div>
 
+  <div id="workout-log-error"></div>
   <div id="workout-log-list"></div>
 
   <script>
     const WORKOUT_LOG_KEY = 'workoutLog';
 
     function loadWorkoutLog() {
-      const stored = localStorage.getItem(WORKOUT_LOG_KEY);
-      return stored ? JSON.parse(stored) : [];
+      try {
+        const stored = localStorage.getItem(WORKOUT_LOG_KEY);
+        return stored ? JSON.parse(stored) : [];
+      } catch (error) {
+        document.getElementById('workout-log-error').textContent =
+          'Unable to load saved workouts. Your browser storage may be blocked or corrupted.';
+        return [];
+      }
     }
 
     function saveWorkoutLog(entries) {
@@ -78,13 +85,29 @@
       });
     }
 
-    document.getElementById('add-log-button').addEventListener('click', function () {
+    function addWorkoutEntry() {
+      const addButton = document.getElementById('add-log-button');
+
+      if (addButton.disabled) {
+        return;
+      }
+
       const exercise = document.getElementById('exercise-select').value;
       const weight = document.getElementById('weight-input').value;
       const reps = document.getElementById('reps-input').value;
 
       if (!weight || !reps) {
         alert('Please enter both weight and reps.');
+        return;
+      }
+
+      if (Number(weight) <= 0 || Number(reps) <= 0) {
+        alert('Weight and reps must be greater than 0.');
+        return;
+      }
+
+      if (Number(weight) > 1000 || Number(reps) > 100) {
+        alert('Weight must be 1000 lbs or under, and reps must be 100 or under.');
         return;
       }
 
@@ -101,6 +124,25 @@
 
       document.getElementById('weight-input').value = '';
       document.getElementById('reps-input').value = '';
+
+      addButton.disabled = true;
+      setTimeout(function () {
+        addButton.disabled = false;
+      }, 500);
+    }
+
+    document.getElementById('add-log-button').addEventListener('click', addWorkoutEntry);
+
+    document.getElementById('weight-input').addEventListener('keydown', function (event) {
+      if (event.key === 'Enter') {
+        addWorkoutEntry();
+      }
+    });
+
+    document.getElementById('reps-input').addEventListener('keydown', function (event) {
+      if (event.key === 'Enter') {
+        addWorkoutEntry();
+      }
     });
 
     renderWorkoutLog();
