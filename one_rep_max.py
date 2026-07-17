@@ -28,12 +28,13 @@ def get_reps():
         return reps
 
 
-weight = get_weight()
-reps = get_reps()
+if __name__ == "__main__":
+    weight = get_weight()
+    reps = get_reps()
 
-if reps > 12:
-    print("Warning: the Epley formula becomes less reliable at high rep counts.")
+    if reps > 12:
+        print("Warning: the Epley formula becomes less reliable at high rep counts.")
 
-one_rep_max = calculate_one_rep_max(weight, reps)
+    one_rep_max = calculate_one_rep_max(weight, reps)
 
-print("Estimated one-rep max:", round(one_rep_max, 1))
+    print("Estimated one-rep max:", round(one_rep_max, 1))
