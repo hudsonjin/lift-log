@@ -52,6 +52,9 @@
   <div id="workout-log-error"></div>
   <div id="workout-log-list"></div>
 
+  <button id="export-csv-button">Export as CSV</button>
+  <div id="export-message"></div>
+
   <h2>1-Rep-Max Calculator</h2>
   <div id="orm-form">
     <input type="number" id="orm-weight-input" placeholder="Weight">
@@ -151,6 +154,38 @@
       if (event.key === 'Enter') {
         addWorkoutEntry();
       }
+    });
+
+    document.getElementById('export-csv-button').addEventListener('click', function () {
+      const exportMessage = document.getElementById('export-message');
+
+      if (workoutLog.length === 0) {
+        exportMessage.textContent = 'No workouts logged yet — nothing to export.';
+        return;
+      }
+
+      exportMessage.textContent = '';
+
+      const rows = [['Exercise', 'Weight', 'Reps', 'Date']];
+
+      workoutLog.forEach(function (entry) {
+        const date = new Date(entry.id).toLocaleDateString('en-US');
+        rows.push(['"' + entry.exercise + '"', entry.weight, entry.reps, date]);
+      });
+
+      const csvText = rows.map(function (row) {
+        return row.join(',');
+      }).join('\n');
+
+      const blob = new Blob([csvText], { type: 'text/csv' });
+      const url = URL.createObjectURL(blob);
+
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = 'workout-log.csv';
+      link.click();
+
+      URL.revokeObjectURL(url);
     });
 
     renderWorkoutLog();

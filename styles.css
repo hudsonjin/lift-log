@@ -53,6 +53,15 @@ li {
   padding: 6px 8px;
 }
 
+#export-csv-button {
+  margin-bottom: 8px;
+}
+
+#export-message {
+  color: #ff595e;
+  margin-bottom: 16px;
+}
+
 #orm-form {
   display: flex;
   flex-wrap: wrap;
