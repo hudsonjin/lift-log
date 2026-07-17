@@ -52,6 +52,14 @@
   <div id="workout-log-error"></div>
   <div id="workout-log-list"></div>
 
+  <h2>1-Rep-Max Calculator</h2>
+  <div id="orm-form">
+    <input type="number" id="orm-weight-input" placeholder="Weight">
+    <input type="number" id="orm-reps-input" placeholder="Reps">
+    <button id="orm-calculate-button">Calculate</button>
+  </div>
+  <div id="orm-result"></div>
+
   <script>
     const WORKOUT_LOG_KEY = 'workoutLog';
 
@@ -146,6 +154,48 @@
     });
 
     renderWorkoutLog();
+  </script>
+
+  <script>
+    function calculateOneRepMax(weight, reps) {
+      if (reps === 1) {
+        return weight;
+      } else {
+        return weight * (1 + reps / 30);
+      }
+    }
+
+    document.getElementById('orm-calculate-button').addEventListener('click', function () {
+      const resultBox = document.getElementById('orm-result');
+      const weightInput = document.getElementById('orm-weight-input').value;
+      const repsInput = document.getElementById('orm-reps-input').value;
+
+      const weight = Number(weightInput);
+      const reps = Number(repsInput);
+
+      if (weightInput === '' || isNaN(weight)) {
+        resultBox.textContent = 'Please enter a valid number for weight.';
+        return;
+      }
+
+      if (repsInput === '' || isNaN(reps)) {
+        resultBox.textContent = 'Please enter a valid number for reps.';
+        return;
+      }
+
+      if (reps <= 0) {
+        resultBox.textContent = 'Reps must be at least 1.';
+        return;
+      }
+
+      let warning = '';
+      if (reps > 12) {
+        warning = 'Warning: the Epley formula becomes less reliable at high rep counts. ';
+      }
+
+      const oneRepMax = calculateOneRepMax(weight, reps);
+      resultBox.textContent = warning + 'Estimated one-rep max: ' + oneRepMax.toFixed(1);
+    });
   </script>
 
   <script>

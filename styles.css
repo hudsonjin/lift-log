@@ -53,6 +53,25 @@ li {
   padding: 6px 8px;
 }
 
+#orm-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+#orm-form input {
+  background-color: #1e1e1e;
+  color: #e0e0e0;
+  border: 1px solid #333;
+  border-radius: 4px;
+  padding: 6px 8px;
+}
+
+#orm-result {
+  margin-bottom: 16px;
+}
+
 #workout-log-error {
   color: #ff595e;
   margin-bottom: 8px;
