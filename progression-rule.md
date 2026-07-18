@@ -8,6 +8,8 @@ Advance: If all 3 sets hit target reps this session → next session, add weight
 Lower-body lifts (squat, deadlift, hip hinge, leg press): +10 lb
 Upper-body lifts (press, row, curl, etc.): +5 lb
 
+v1 exercise list contains no lower-body lifts; the +10 lb tier is retained but currently unused.
+
 
 
 Hold: If any set fell short of target reps → repeat the same weight next session.

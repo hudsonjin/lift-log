@@ -40,6 +40,11 @@ Extends the existing entry shape, doesn't replace it:
 - No editing a past session's data in place — delete only (see feature list #6), no edit-and-resave.
 - No charts, trends, or analytics beyond the plain list.
 - No exercise-library management — exercise list stays fixed/hardcoded.
+
+  v1 exercise list (hardcoded):
+  Upper (+5 lb): Flat Bench, Lat Pulldown, Incline DB Bench, Single-arm DB Row, Chest Fly, BB Bicep Curls, Skull Crushers, Incline DB Curls, Tricep Pushdowns, DB Curls
+  Bodyweight (no suggestion): Pull-ups, Tricep Dips
+
 - No 2-session confirmation, deload, RPE, or auto-regulation — deferred per `progression-rule.md`'s own v2 list.
 - No confetti/"Add Set" gamification counter — removed entirely for v1, not carried over from the earlier prototype.
 - The existing 1-Rep-Max calculator stays in the app but isn't part of v1's tested feature set.
