@@ -1,9 +1,9 @@
 The rule
 
-Per exercise, store a target weight, a target reps number (default 8 for every exercise — the bottom of the ACSM 8–12 zone, so there's headroom and 3×8 is an achievable advance bar — stored per-exercise and user-editable), and a set count (3).
+Per exercise, store a target weight, a target reps number (default 8 for every exercise — the bottom of the ACSM 8–12 zone, so there's headroom and 3×8 is an achievable advance bar — stored per-exercise and user-editable), and a set count (3). 
 
 
-Advance: If all 3 sets hit target reps this session → next session, add weight.
+Advance: If all 3 sets hit target reps this session → next session, add weight. (Reps ≥ target counts as a hit; overshoot has no additional effect in v1.)
 
 Lower-body lifts (squat, deadlift, hip hinge, leg press): +10 lb
 Upper-body lifts (press, row, curl, etc.): +5 lb
@@ -15,12 +15,16 @@ Hold: If any set fell short of target reps → repeat the same weight next sessi
 
 That's it. One trigger, one increment per body region, one fallback. This is linear progression with a fixed rep-and-set target — not full double progression (see v1 simplifications).
 
+Suggestions are always computed fresh from stored history, never cached.
+
 Edge cases (v1 behavior)
 
 
 First-ever session: On the first log of an exercise there's no history to evaluate, so the app prompts the user to enter a starting weight, applies the default target reps (8), makes no weight suggestion, and simply records the session; the rule first fires on session two.
 Gap / layoff: Elapsed time is ignored — the rule reads only the last completed session's hit/miss, so after a two-week break it resumes at the last weight as if nothing happened (known limitation: no post-layoff deload in v1; a returning user just repeats or advances from where they left off).
 Exercise swap: Explicitly deferred — v1 has no concept of swapping, so a substituted exercise is just a different record that runs its own first-ever-session logic and carries nothing over from the exercise it replaced.
+Target-reps change: Editing the target reps or set count for an exercise applies going forward only; past sessions are not reinterpreted under the new target.
+Session identity: Each logged workout entry for an exercise is its own session, full stop — two same-day logs of the same exercise count as two separate sessions for advance/hold purposes.
 
 
 What's solid vs. a judgment call
