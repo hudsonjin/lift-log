@@ -15,6 +15,9 @@ v1 exercise list contains no lower-body lifts; the +10 lb tier is retained but c
 Hold: If any set fell short of target reps → repeat the same weight next session.
 
 
+Bodyweight exercises: exercises tagged as bodyweight (per spec.md's exercise list) receive no weight suggestion — the rule outputs "bodyweight — no suggestion made." They are logged and tracked normally, but the rule never suggests adding load. Rep-based progression for bodyweight is explicitly deferred to v2.
+
+
 That's it. One trigger, one increment per body region, one fallback. This is linear progression with a fixed rep-and-set target — not full double progression (see v1 simplifications).
 
 Suggestions are always computed fresh from stored history, never cached.
