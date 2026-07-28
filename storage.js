@@ -33,6 +33,10 @@ function migrateEntry(rawEntry) {
     migrated.reps = [Number(migrated.reps)];
   }
 
+  if (migrated.weight !== 'bodyweight' && typeof migrated.weight !== 'number') {
+    migrated.weight = Number(migrated.weight);
+  }
+
   if (migrated.timestamp === undefined) {
     migrated.timestamp = looksLikeTimestamp(migrated.id) ? migrated.id : Date.now();
   }

@@ -37,91 +37,48 @@ li {
   font-size: 1rem;
 }
 
-#workout-log-form {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-bottom: 16px;
+#screen-log,
+#screen-history,
+#screen-export {
+  padding-bottom: 72px;
 }
 
-#workout-log-form select,
-#workout-log-form input {
+#exercise-select,
+#weight-input,
+.reps-input {
   background-color: #1e1e1e;
   color: #e0e0e0;
   border: 1px solid #333;
   border-radius: 4px;
   padding: 6px 8px;
-}
-
-#export-csv-button {
   margin-bottom: 8px;
 }
 
-#export-message {
-  color: #ff595e;
-  margin-bottom: 16px;
-}
-
-#orm-form {
+#weight-field,
+#reps-fields {
   display: flex;
-  flex-wrap: wrap;
+  flex-direction: column;
   gap: 8px;
-  margin-bottom: 8px;
-}
-
-#orm-form input {
-  background-color: #1e1e1e;
-  color: #e0e0e0;
-  border: 1px solid #333;
-  border-radius: 4px;
-  padding: 6px 8px;
-}
-
-#orm-result {
   margin-bottom: 16px;
 }
 
-#workout-log-error {
-  color: #ff595e;
-  margin-bottom: 8px;
-}
-
-.workout-log-row {
-  padding: 10px 0;
-  border-bottom: 1px solid #222;
-}
-
-.add-set-button {
-  margin-top: 6px;
-  margin-right: 8px;
-}
-
-.add-set-button:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.set-counter {
-  font-size: 0.9rem;
-  color: #b0b0b0;
-}
-
-.confetti-piece {
+#tab-bar {
   position: fixed;
-  top: -10px;
-  width: 8px;
-  height: 8px;
-  opacity: 0.9;
-  animation-name: confetti-fall;
-  animation-timing-function: linear;
-  animation-fill-mode: forwards;
-  z-index: 1000;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  background-color: #1e1e1e;
+  border-top: 1px solid #333;
 }
 
-@keyframes confetti-fall {
-  to {
-    transform: translateY(100vh) rotate(360deg);
-  }
+.tab-button {
+  flex: 1;
+  padding: 14px 0;
+  background: none;
+  border: none;
+  color: #e0e0e0;
+  font-size: 1rem;
 }
 
 hr {

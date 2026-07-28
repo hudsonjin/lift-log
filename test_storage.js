@@ -84,6 +84,19 @@ function test_migrateEntry_fixes_both_reps_and_timestamp_together() {
   console.log('PASS: migrateEntry fixes reps and timestamp together on the same entry');
 }
 
+function test_migrateEntry_converts_numeric_string_weight_to_number() {
+  const result = migrateEntry({ id: 1721000000000, exercise: 'Bench', weight: '135', reps: '8' });
+  assert(result.weight === 135, 'string weight "135" should be converted to the number 135');
+  assert(typeof result.weight === 'number', 'converted weight must be a real number, not a string');
+  console.log('PASS: migrateEntry converts a numeric-string weight ("135") to the number 135');
+}
+
+function test_migrateEntry_preserves_bodyweight_sentinel() {
+  const result = migrateEntry({ id: 1721000000000, exercise: 'Pull-ups', weight: 'bodyweight', reps: '8' });
+  assert(result.weight === 'bodyweight', 'the "bodyweight" sentinel must be preserved as-is, not converted to NaN');
+  console.log('PASS: migrateEntry preserves the "bodyweight" sentinel string unchanged');
+}
+
 function test_migrateEntry_is_idempotent_on_already_migrated_entries() {
   const alreadyMigrated = { id: 'abc', exercise: 'Bench', weight: 135, reps: [8, 8, 8], timestamp: 999 };
   const result = migrateEntry(alreadyMigrated);
@@ -197,6 +210,8 @@ function test_loadEntries_throws_on_corrupted_storage() {
 test_migrateEntry_wraps_number_reps();
 test_migrateEntry_wraps_and_converts_string_reps_to_number();
 test_migrateEntry_leaves_array_reps_alone();
+test_migrateEntry_converts_numeric_string_weight_to_number();
+test_migrateEntry_preserves_bodyweight_sentinel();
 test_migrateEntry_backfills_timestamp_from_timestamp_like_id();
 test_migrateEntry_backfills_timestamp_from_now_when_id_is_not_timestamp_shaped();
 test_migrateEntry_leaves_existing_timestamp_alone();

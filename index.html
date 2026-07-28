@@ -7,275 +7,188 @@
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <h1>Lift Log</h1>
-  <p>A simple place to track my workouts.</p>
-  <h2>Chest and Back</h2>
-  <ul>
-    <li>Pull ups</li>
-    <li>Flat Bench (Barbell or Dumbell)</li>
-    <li>Lat Pulldown</li>
-    <li>Incline DB Bench</li>
-    <li>Single-arm DB row</li>
-    <li>Chest fly (optional)</li>
-  </ul>
-  <h2>Arms</h2>
-  <ul>
-    <li>Tricep Dips</li>
-    <li>Barbell Bicep Curls</li>
-    <li>Skull Crushers</li>
-    <li>Incline DB Bicep Curls</li>
-    <li>Straight-bar Tricep Pushdowns</li>
-    <li>Standing DB Bicep Curls</li>
-  </ul>
+  <section id="screen-log">
+    <h1>Log a Workout</h1>
 
-  <h2>Log a Workout</h2>
-  <div id="workout-log-form">
     <select id="exercise-select">
-      <option>Pull ups</option>
-      <option>Flat Bench (Barbell or Dumbell)</option>
+      <option>Flat Bench</option>
       <option>Lat Pulldown</option>
       <option>Incline DB Bench</option>
-      <option>Single-arm DB row</option>
-      <option>Chest fly (optional)</option>
-      <option>Tricep Dips</option>
-      <option>Barbell Bicep Curls</option>
+      <option>Single-arm DB Row</option>
+      <option>Chest Fly</option>
+      <option>BB Bicep Curls</option>
       <option>Skull Crushers</option>
-      <option>Incline DB Bicep Curls</option>
-      <option>Straight-bar Tricep Pushdowns</option>
-      <option>Standing DB Bicep Curls</option>
+      <option>Incline DB Curls</option>
+      <option>Tricep Pushdowns</option>
+      <option>DB Curls</option>
+      <option>Pull-ups</option>
+      <option>Tricep Dips</option>
     </select>
-    <input type="number" id="weight-input" placeholder="Weight">
-    <input type="number" id="reps-input" placeholder="Reps">
-    <button id="add-log-button">Add</button>
-  </div>
 
-  <div id="workout-log-error"></div>
-  <div id="workout-log-list"></div>
+    <p id="log-message"></p>
 
-  <button id="export-csv-button">Export as CSV</button>
-  <div id="export-message"></div>
+    <div id="weight-field">
+      <label id="weight-label" for="weight-input">Weight</label>
+      <input type="number" id="weight-input" placeholder="Weight">
+    </div>
 
-  <h2>1-Rep-Max Calculator</h2>
-  <div id="orm-form">
-    <input type="number" id="orm-weight-input" placeholder="Weight">
-    <input type="number" id="orm-reps-input" placeholder="Reps">
-    <button id="orm-calculate-button">Calculate</button>
-  </div>
-  <div id="orm-result"></div>
+    <div id="reps-fields">
+      <label>Set 1 Reps: <input type="number" class="reps-input" id="reps-input-0"></label>
+      <label>Set 2 Reps: <input type="number" class="reps-input" id="reps-input-1"></label>
+      <label>Set 3 Reps: <input type="number" class="reps-input" id="reps-input-2"></label>
+    </div>
+
+    <button id="save-session-button">Save Session</button>
+  </section>
+
+  <section id="screen-history" hidden>
+    <h1>Workout History</h1>
+    <p>Coming in step 3.</p>
+  </section>
+
+  <section id="screen-export" hidden>
+    <h1>Export</h1>
+    <p>Coming in step 5.</p>
+  </section>
+
+  <nav id="tab-bar">
+    <button id="tab-log" class="tab-button">Log</button>
+    <button id="tab-history" class="tab-button">History</button>
+    <button id="tab-export" class="tab-button">Export</button>
+  </nav>
+
+  <script src="storage.js"></script>
+  <script>
+    function showScreen(name) {
+      document.getElementById('screen-log').hidden = name !== 'log';
+      document.getElementById('screen-history').hidden = name !== 'history';
+      document.getElementById('screen-export').hidden = name !== 'export';
+    }
+
+    document.getElementById('tab-log').addEventListener('click', function () {
+      showScreen('log');
+    });
+
+    document.getElementById('tab-history').addEventListener('click', function () {
+      showScreen('history');
+    });
+
+    document.getElementById('tab-export').addEventListener('click', function () {
+      showScreen('export');
+    });
+
+    showScreen('log');
+  </script>
 
   <script>
-    const WORKOUT_LOG_KEY = 'workoutLog';
+    const BODYWEIGHT_EXERCISES = ['Pull-ups', 'Tricep Dips'];
 
-    function loadWorkoutLog() {
-      try {
-        const stored = localStorage.getItem(WORKOUT_LOG_KEY);
-        return stored ? JSON.parse(stored) : [];
-      } catch (error) {
-        document.getElementById('workout-log-error').textContent =
-          'Unable to load saved workouts. Your browser storage may be blocked or corrupted.';
-        return [];
-      }
+    function isBodyweightExercise(exercise) {
+      return BODYWEIGHT_EXERCISES.includes(exercise);
     }
 
-    function saveWorkoutLog(entries) {
-      localStorage.setItem(WORKOUT_LOG_KEY, JSON.stringify(entries));
-    }
-
-    let workoutLog = loadWorkoutLog();
-
-    const workoutLogList = document.getElementById('workout-log-list');
-
-    function renderWorkoutLog() {
-      workoutLogList.innerHTML = '';
-
-      workoutLog.forEach(function (entry) {
-        const row = document.createElement('div');
-        row.className = 'workout-log-row';
-        row.textContent = entry.exercise + ' — ' + entry.weight + ' lbs x ' + entry.reps + ' reps';
-        workoutLogList.appendChild(row);
+    function hasHistory(exercise) {
+      return loadEntries().some(function (entry) {
+        return entry.exercise === exercise;
       });
     }
 
-    function addWorkoutEntry() {
-      const addButton = document.getElementById('add-log-button');
+    function clearRepsInputs() {
+      document.getElementById('reps-input-0').value = '';
+      document.getElementById('reps-input-1').value = '';
+      document.getElementById('reps-input-2').value = '';
+    }
 
-      if (addButton.disabled) {
-        return;
-      }
-
+    function renderLogForm() {
       const exercise = document.getElementById('exercise-select').value;
-      const weight = document.getElementById('weight-input').value;
-      const reps = document.getElementById('reps-input').value;
+      const messageBox = document.getElementById('log-message');
+      const weightField = document.getElementById('weight-field');
+      const weightInput = document.getElementById('weight-input');
+      const weightLabel = document.getElementById('weight-label');
+      const saveButton = document.getElementById('save-session-button');
 
-      if (!weight || !reps) {
-        alert('Please enter both weight and reps.');
+      weightInput.value = '';
+      clearRepsInputs();
+      saveButton.disabled = false;
+
+      if (isBodyweightExercise(exercise)) {
+        messageBox.textContent = 'bodyweight — no suggestion made';
+        weightField.hidden = true;
         return;
       }
 
-      if (Number(weight) <= 0 || Number(reps) <= 0) {
-        alert('Weight and reps must be greater than 0.');
+      weightField.hidden = false;
+
+      let exerciseHasHistory;
+      try {
+        exerciseHasHistory = hasHistory(exercise);
+      } catch (error) {
+        messageBox.textContent = 'Unable to load saved workouts. Storage may be blocked or corrupted.';
+        saveButton.disabled = true;
         return;
       }
 
-      if (Number(weight) > 1000 || Number(reps) > 100) {
-        alert('Weight must be 1000 lbs or under, and reps must be 100 or under.');
-        return;
-      }
-
-      const newEntry = {
-        id: Date.now(),
-        exercise: exercise,
-        weight: weight,
-        reps: reps
-      };
-
-      workoutLog.push(newEntry);
-      saveWorkoutLog(workoutLog);
-      renderWorkoutLog();
-
-      document.getElementById('weight-input').value = '';
-      document.getElementById('reps-input').value = '';
-
-      addButton.disabled = true;
-      setTimeout(function () {
-        addButton.disabled = false;
-      }, 500);
-    }
-
-    document.getElementById('add-log-button').addEventListener('click', addWorkoutEntry);
-
-    document.getElementById('weight-input').addEventListener('keydown', function (event) {
-      if (event.key === 'Enter') {
-        addWorkoutEntry();
-      }
-    });
-
-    document.getElementById('reps-input').addEventListener('keydown', function (event) {
-      if (event.key === 'Enter') {
-        addWorkoutEntry();
-      }
-    });
-
-    document.getElementById('export-csv-button').addEventListener('click', function () {
-      const exportMessage = document.getElementById('export-message');
-
-      if (workoutLog.length === 0) {
-        exportMessage.textContent = 'No workouts logged yet — nothing to export.';
-        return;
-      }
-
-      exportMessage.textContent = '';
-
-      const rows = [['Exercise', 'Weight', 'Reps', 'Date']];
-
-      workoutLog.forEach(function (entry) {
-        const date = new Date(entry.id).toLocaleDateString('en-US');
-        rows.push(['"' + entry.exercise + '"', entry.weight, entry.reps, date]);
-      });
-
-      const csvText = rows.map(function (row) {
-        return row.join(',');
-      }).join('\n');
-
-      const blob = new Blob([csvText], { type: 'text/csv' });
-      const url = URL.createObjectURL(blob);
-
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = 'workout-log.csv';
-      link.click();
-
-      URL.revokeObjectURL(url);
-    });
-
-    renderWorkoutLog();
-  </script>
-
-  <script>
-    function calculateOneRepMax(weight, reps) {
-      if (reps === 1) {
-        return weight;
+      if (exerciseHasHistory) {
+        messageBox.textContent = '';
+        weightLabel.textContent = 'Weight';
       } else {
-        return weight * (1 + reps / 30);
+        messageBox.textContent = 'First time logging this exercise. Enter your starting weight below.';
+        weightLabel.textContent = 'Starting Weight';
       }
     }
 
-    document.getElementById('orm-calculate-button').addEventListener('click', function () {
-      const resultBox = document.getElementById('orm-result');
-      const weightInput = document.getElementById('orm-weight-input').value;
-      const repsInput = document.getElementById('orm-reps-input').value;
+    document.getElementById('exercise-select').addEventListener('change', renderLogForm);
 
-      const weight = Number(weightInput);
-      const reps = Number(repsInput);
+    document.getElementById('save-session-button').addEventListener('click', function () {
+      const exercise = document.getElementById('exercise-select').value;
+      const bodyweight = isBodyweightExercise(exercise);
+      const messageBox = document.getElementById('log-message');
 
-      if (weightInput === '' || isNaN(weight)) {
-        resultBox.textContent = 'Please enter a valid number for weight.';
-        return;
-      }
+      const repsValues = [
+        document.getElementById('reps-input-0').value,
+        document.getElementById('reps-input-1').value,
+        document.getElementById('reps-input-2').value
+      ];
 
-      if (repsInput === '' || isNaN(reps)) {
-        resultBox.textContent = 'Please enter a valid number for reps.';
-        return;
-      }
-
-      if (reps <= 0) {
-        resultBox.textContent = 'Reps must be at least 1.';
-        return;
-      }
-
-      let warning = '';
-      if (reps > 12) {
-        warning = 'Warning: the Epley formula becomes less reliable at high rep counts. ';
-      }
-
-      const oneRepMax = calculateOneRepMax(weight, reps);
-      resultBox.textContent = warning + 'Estimated one-rep max: ' + oneRepMax.toFixed(1);
-    });
-  </script>
-
-  <script>
-    document.querySelectorAll('li').forEach(function (item) {
-      let setCount = 0;
-
-      const button = document.createElement('button');
-      button.textContent = 'Add Set';
-      button.className = 'add-set-button';
-
-      const counterText = document.createElement('span');
-      counterText.textContent = 'Sets: 0/3';
-      counterText.className = 'set-counter';
-
-      button.addEventListener('click', function () {
-        setCount = setCount + 1;
-        counterText.textContent = 'Sets: ' + setCount + '/3';
-
-        if (setCount >= 3) {
-          button.disabled = true;
-          showConfetti();
-        }
+      const hasInvalidReps = repsValues.some(function (value) {
+        return value === '' || Number(value) <= 0;
       });
 
-      item.appendChild(document.createElement('br'));
-      item.appendChild(button);
-      item.appendChild(counterText);
+      if (hasInvalidReps) {
+        alert('Please enter a valid number of reps (greater than 0) for all 3 sets.');
+        return;
+      }
+
+      let weight;
+
+      if (bodyweight) {
+        weight = 'bodyweight';
+      } else {
+        const weightInputValue = document.getElementById('weight-input').value;
+
+        if (weightInputValue === '' || Number(weightInputValue) <= 0) {
+          alert('Please enter a valid weight (greater than 0).');
+          return;
+        }
+
+        weight = Number(weightInputValue);
+      }
+
+      try {
+        addEntry({
+          exercise: exercise,
+          weight: weight,
+          reps: repsValues.map(Number)
+        });
+      } catch (error) {
+        messageBox.textContent = 'Unable to save. Storage may be blocked or corrupted.';
+        return;
+      }
+
+      renderLogForm();
     });
 
-    function showConfetti() {
-      const colors = ['#ff595e', '#ffca3a', '#8ac926', '#1982c4', '#6a4c93'];
-
-      for (let i = 0; i < 30; i++) {
-        const piece = document.createElement('div');
-        piece.className = 'confetti-piece';
-        piece.style.left = Math.random() * 100 + 'vw';
-        piece.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-        piece.style.animationDuration = (Math.random() * 2 + 2) + 's';
-        document.body.appendChild(piece);
-
-        setTimeout(function () {
-          piece.remove();
-        }, 4000);
-      }
-    }
+    renderLogForm();
   </script>
 </body>
 </html>
