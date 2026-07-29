@@ -81,6 +81,24 @@ li {
   font-size: 1rem;
 }
 
+.history-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 0;
+  border-bottom: 1px solid #222;
+}
+
+.history-row button {
+  background-color: #1e1e1e;
+  color: #e0e0e0;
+  border: 1px solid #333;
+  border-radius: 4px;
+  padding: 6px 10px;
+  cursor: pointer;
+}
+
 hr {
   border: none;
   border-top: 1px solid #333;

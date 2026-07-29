@@ -43,7 +43,7 @@
 
   <section id="screen-history" hidden>
     <h1>Workout History</h1>
-    <p>Coming in step 3.</p>
+    <div id="history-list"></div>
   </section>
 
   <section id="screen-export" hidden>
@@ -63,6 +63,10 @@
       document.getElementById('screen-log').hidden = name !== 'log';
       document.getElementById('screen-history').hidden = name !== 'history';
       document.getElementById('screen-export').hidden = name !== 'export';
+
+      if (name === 'history') {
+        renderHistory();
+      }
     }
 
     document.getElementById('tab-log').addEventListener('click', function () {
@@ -189,6 +193,102 @@
     });
 
     renderLogForm();
+  </script>
+
+  <script>
+    let pendingDeleteId = null;
+
+    function formatReps(repsArray) {
+      return repsArray.join(', ');
+    }
+
+    function formatDate(timestamp) {
+      return new Date(timestamp).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    }
+
+    function sortEntriesNewestFirst(entries) {
+      return entries
+        .map(function (entry, index) {
+          return { entry: entry, index: index };
+        })
+        .sort(function (a, b) {
+          if (b.entry.timestamp !== a.entry.timestamp) {
+            return b.entry.timestamp - a.entry.timestamp;
+          }
+          return b.index - a.index;
+        })
+        .map(function (wrapped) {
+          return wrapped.entry;
+        });
+    }
+
+    function renderHistory() {
+      const container = document.getElementById('history-list');
+      container.innerHTML = '';
+
+      let entries;
+      try {
+        entries = loadEntries();
+      } catch (error) {
+        container.textContent = 'Unable to load saved workouts. Storage may be blocked or corrupted.';
+        return;
+      }
+
+      if (entries.length === 0) {
+        container.textContent = 'No workouts logged yet.';
+        return;
+      }
+
+      sortEntriesNewestFirst(entries).forEach(function (entry) {
+        const row = document.createElement('div');
+        row.className = 'history-row';
+
+        const weightText = entry.weight === 'bodyweight' ? 'bodyweight' : entry.weight + ' lbs';
+
+        const summary = document.createElement('span');
+        summary.textContent =
+          entry.exercise + ' — ' + weightText + ' — Reps: ' + formatReps(entry.reps) + ' — ' + formatDate(entry.timestamp);
+        row.appendChild(summary);
+
+        if (entry.id === pendingDeleteId) {
+          const confirmText = document.createElement('span');
+          confirmText.textContent = ' Delete this session? ';
+          row.appendChild(confirmText);
+
+          const yesButton = document.createElement('button');
+          yesButton.textContent = 'Yes';
+          yesButton.addEventListener('click', function () {
+            try {
+              deleteEntry(entry.id);
+            } catch (error) {
+              container.textContent = 'Unable to delete. Storage may be blocked or corrupted.';
+              return;
+            }
+            pendingDeleteId = null;
+            renderHistory();
+          });
+          row.appendChild(yesButton);
+
+          const cancelButton = document.createElement('button');
+          cancelButton.textContent = 'Cancel';
+          cancelButton.addEventListener('click', function () {
+            pendingDeleteId = null;
+            renderHistory();
+          });
+          row.appendChild(cancelButton);
+        } else {
+          const deleteButton = document.createElement('button');
+          deleteButton.textContent = 'Delete';
+          deleteButton.addEventListener('click', function () {
+            pendingDeleteId = entry.id;
+            renderHistory();
+          });
+          row.appendChild(deleteButton);
+        }
+
+        container.appendChild(row);
+      });
+    }
   </script>
 </body>
 </html>
