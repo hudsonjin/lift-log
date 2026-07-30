@@ -26,6 +26,7 @@
     </select>
 
     <p id="log-message"></p>
+    <p id="log-reason"></p>
 
     <div id="weight-field">
       <label id="weight-label" for="weight-input">Weight</label>
@@ -58,6 +59,7 @@
   </nav>
 
   <script src="storage.js"></script>
+  <script src="suggestion.js"></script>
   <script>
     function showScreen(name) {
       document.getElementById('screen-log').hidden = name !== 'log';
@@ -85,18 +87,6 @@
   </script>
 
   <script>
-    const BODYWEIGHT_EXERCISES = ['Pull-ups', 'Tricep Dips'];
-
-    function isBodyweightExercise(exercise) {
-      return BODYWEIGHT_EXERCISES.includes(exercise);
-    }
-
-    function hasHistory(exercise) {
-      return loadEntries().some(function (entry) {
-        return entry.exercise === exercise;
-      });
-    }
-
     function clearRepsInputs() {
       document.getElementById('reps-input-0').value = '';
       document.getElementById('reps-input-1').value = '';
@@ -106,6 +96,7 @@
     function renderLogForm() {
       const exercise = document.getElementById('exercise-select').value;
       const messageBox = document.getElementById('log-message');
+      const reasonBox = document.getElementById('log-reason');
       const weightField = document.getElementById('weight-field');
       const weightInput = document.getElementById('weight-input');
       const weightLabel = document.getElementById('weight-label');
@@ -114,31 +105,41 @@
       weightInput.value = '';
       clearRepsInputs();
       saveButton.disabled = false;
+      reasonBox.textContent = '';
 
-      if (isBodyweightExercise(exercise)) {
-        messageBox.textContent = 'bodyweight — no suggestion made';
+      let suggestion;
+      try {
+        suggestion = getSuggestion(exercise);
+      } catch (error) {
+        messageBox.textContent = 'Unable to load saved workouts. Storage may be blocked or corrupted.';
+        weightField.hidden = false;
+        saveButton.disabled = true;
+        return;
+      }
+
+      if (suggestion.type === 'bodyweight') {
+        messageBox.textContent = suggestion.message;
         weightField.hidden = true;
         return;
       }
 
       weightField.hidden = false;
 
-      let exerciseHasHistory;
-      try {
-        exerciseHasHistory = hasHistory(exercise);
-      } catch (error) {
-        messageBox.textContent = 'Unable to load saved workouts. Storage may be blocked or corrupted.';
-        saveButton.disabled = true;
+      if (suggestion.type === 'first-ever') {
+        messageBox.textContent = suggestion.message;
+        weightLabel.textContent = 'Starting Weight';
         return;
       }
 
-      if (exerciseHasHistory) {
-        messageBox.textContent = '';
-        weightLabel.textContent = 'Weight';
-      } else {
-        messageBox.textContent = 'First time logging this exercise. Enter your starting weight below.';
-        weightLabel.textContent = 'Starting Weight';
-      }
+      weightLabel.textContent = 'Weight used';
+      weightInput.value = suggestion.weight;
+
+      messageBox.textContent =
+        'Suggested: ' + suggestion.weight + ' lbs x ' + suggestion.targetReps + ' reps x ' + suggestion.setCount + ' sets';
+
+      reasonBox.textContent = suggestion.type === 'advance'
+        ? '(hit all sets last time → +5 lbs)'
+        : '(missed reps last time → same weight)';
     }
 
     document.getElementById('exercise-select').addEventListener('change', renderLogForm);
