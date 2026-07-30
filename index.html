@@ -67,6 +67,10 @@
       document.getElementById('screen-history').hidden = name !== 'history';
       document.getElementById('screen-export').hidden = name !== 'export';
 
+      if (name === 'log') {
+        renderLogForm();
+      }
+
       if (name === 'history') {
         renderHistory();
       }
@@ -83,8 +87,6 @@
     document.getElementById('tab-export').addEventListener('click', function () {
       showScreen('export');
     });
-
-    showScreen('log');
   </script>
 
   <script>
