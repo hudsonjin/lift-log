@@ -49,7 +49,8 @@
 
   <section id="screen-export" hidden>
     <h1>Export</h1>
-    <p>Coming in step 5.</p>
+    <button id="export-csv-button">Export as CSV</button>
+    <p id="export-message"></p>
   </section>
 
   <nav id="tab-bar">
@@ -290,6 +291,60 @@
         container.appendChild(row);
       });
     }
+  </script>
+
+  <script>
+    function csvField(value) {
+      return '"' + String(value).replace(/"/g, '""') + '"';
+    }
+
+    document.getElementById('export-csv-button').addEventListener('click', function () {
+      const exportMessage = document.getElementById('export-message');
+
+      let entries;
+      try {
+        entries = loadEntries();
+      } catch (error) {
+        exportMessage.textContent = 'Unable to load saved workouts. Storage may be blocked or corrupted.';
+        return;
+      }
+
+      if (entries.length === 0) {
+        exportMessage.textContent = 'No workouts logged yet — nothing to export.';
+        return;
+      }
+
+      exportMessage.textContent = '';
+
+      const header = ['Exercise', 'Weight', 'Set 1 Reps', 'Set 2 Reps', 'Set 3 Reps', 'Date'];
+
+      const dataRows = entries.map(function (entry) {
+        return [
+          entry.exercise,
+          entry.weight,
+          entry.reps[0],
+          entry.reps[1],
+          entry.reps[2],
+          formatDate(entry.timestamp)
+        ];
+      });
+
+      const csvText = [header].concat(dataRows)
+        .map(function (row) {
+          return row.map(csvField).join(',');
+        })
+        .join('\n');
+
+      const blob = new Blob([csvText], { type: 'text/csv' });
+      const url = URL.createObjectURL(blob);
+
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = 'workout-log.csv';
+      link.click();
+
+      URL.revokeObjectURL(url);
+    });
   </script>
 </body>
 </html>
